@@ -17,7 +17,7 @@
 #include <gunrock/app/enactor_kernel.cuh>
 #include <gunrock/app/enactor_helper.cuh>
 #include <gunrock/util/latency_utils.cuh>
-//#include <gunrock/util/test_utils.h>
+#include <gunrock/util/test_utils.h>
 #include <moderngpu.cuh>
 
 using namespace mgpu;
@@ -155,6 +155,8 @@ void Iteration_Loop(
         received_length          = frontier_attribute[0].queue_length;
         data_slice->wait_counter = 0;
         tretval                  = cudaSuccess;
+        gunrock::util::CpuTimer cpuTimer;
+        cpuTimer.Start();
         if (num_gpus>1 && enactor_stats[0].iteration != 0)
         {
             frontier_attribute[0].queue_reset  = true;
@@ -907,6 +909,8 @@ void Iteration_Loop(
         iter_total_time.push_back(iter_stop_time - iter_start_time);
         iter_start_time = iter_stop_time;
 #endif
+        cpuTimer.Stop();
+        printf("Iteration: %u Time: %f ms\n", enactor_stats->iteration, cpuTimer.ElapsedMillis());
         Iteration::Iteration_Change(enactor_stats->iteration);
     }
 }
