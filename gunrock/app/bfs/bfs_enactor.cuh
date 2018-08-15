@@ -878,6 +878,9 @@ struct BFSIteration : public IterationBase <
                      data_slice -> direction_votes[iteration_] = BACKWARD;
                 else data_slice -> direction_votes[iteration_] = FORWARD;
             }
+//            data_slice -> direction_votes[iteration_] = FORWARD;
+            //printf("Prev: %s Current: %s\n", (data_slice -> previous_direction == FORWARD? "FORWARD":"BACKWARD"),
+            //       (data_slice -> direction_votes[iteration_] == FORWARD?"FORWARD":"BACKWARD"));
         } else data_slice -> direction_votes[iteration_] = FORWARD;
         data_slice -> direction_votes[(iteration_+1)%4] = UNDECIDED;
 
@@ -1200,6 +1203,10 @@ struct BFSIteration : public IterationBase <
                             data_slice -> split_lengths.GetPointer(util::DEVICE),
                             data_slice -> unvisited_vertices[frontier_attribute -> selector].GetPointer(util::DEVICE),
                             data_slice -> labels.GetPointer(util::DEVICE));
+                        GRError(cudaStreamSynchronize(stream));
+                        Value v;
+                        GRError(cudaMemcpy(&v, data_slice -> split_lengths.GetPointer(util::DEVICE),sizeof(Value), cudaMemcpyDeviceToHost));
+                        printf("unvisited %d \n", v);
                     }
                 } else {
                     num_blocks = data_slice -> local_vertices.GetSize() / AdvanceKernelPolicy::THREADS + 1;

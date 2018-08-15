@@ -143,7 +143,7 @@ void DisplaySolution(
             PrintValue(sigmas[i]);
             printf(",");
             PrintValue(bc_values[i]);
-            printf(" ");
+            printf("\n");
         }
         printf("]\n");
     }
@@ -708,7 +708,7 @@ cudaError_t RunTests(Info<VertexId, SizeT, Value> *info)
     if (!quiet_mode)
     {
         // Display Solution
-        DisplaySolution(h_sigmas, h_bc_values, graph->nodes);
+        DisplaySolution(h_sigmas, h_bc_values, std::min(39, (int)graph->nodes));
     }
 
     info->ComputeTraversalStats(  // compute running statistics
