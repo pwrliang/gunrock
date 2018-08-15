@@ -910,7 +910,7 @@ void Iteration_Loop(
         iter_start_time = iter_stop_time;
 #endif
         cpuTimer.Stop();
-        printf("Iteration: %u Time: %f ms\n", enactor_stats->iteration, cpuTimer.ElapsedMillis());
+        //printf("Iteration: %u Time: %f ms\n", enactor_stats->iteration, cpuTimer.ElapsedMillis());
         Iteration::Iteration_Change(enactor_stats->iteration);
     }
 }
