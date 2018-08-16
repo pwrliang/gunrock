@@ -725,7 +725,7 @@ cudaError_t RunTests(Info<VertexId, SizeT, Value> *info)
         "PR Problem Data Extraction Failed", __FILE__, __LINE__))
         return retval;
 
-    if (!quiet_mode)
+    //if (!quiet_mode)
     {
         double total_pr = 0;
         for (SizeT i = 0; i < graph->nodes; ++i)
