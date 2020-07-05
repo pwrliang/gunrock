@@ -1,4 +1,12 @@
-# gunrock shared library cmake file
+# ------------------------------------------------------------------------
+#  Gunrock: Shared Library CMAKE files
+# ------------------------------------------------------------------------
+
+if(RAPIDJSON_FOUND)
+  include_directories(${RAPIDJSON_INCLUDEDIR})
+else()
+  message(SEND_ERROR "RapidJson include directory not set.")
+endif()
 
 if(mgpu_INCLUDE_DIRS)
   include_directories(${mgpu_INCLUDE_DIRS})
@@ -13,25 +21,30 @@ else()
 endif()
 
 set (mgpu_SOURCE_FILES
-  ${mgpu_SOURCE_DIRS}/mgpucontext.cu
-  ${mgpu_SOURCE_DIRS}/mgpuutil.cpp)
+  ${mgpu_SOURCE_DIRS}/context.hxx)
 
 set(HFILES_PUBLIC
   gunrock.h)
 
 set(CUFILES
-  app/bfs/bfs_app.cu
-  app/bc/bc_app.cu
-  app/cc/cc_app.cu
+  # TODO: Add support for remaining primitives
+  ##app/bfs/bfs_app.cu
+  #app/bc/bc_app.cu
+  ##app/cc/cc_app.cu
   app/pr/pr_app.cu
+  app/hits/hits_app.cu
+  app/sm/sm_app.cu
   app/sssp/sssp_app.cu
+  #app/louvain/louvain_app.cu
+  #app/color/color_app.cu
   util/test_utils.cu
   util/error_utils.cu
   util/misc_utils.cu
+  util/str_to_T.cu
   ${mgpu_SOURCE_FILES}
   util/gitsha1.c)
 
-cuda_add_library(gunrock ${LIB_TYPE}
+CUDA_ADD_LIBRARY(gunrock ${LIB_TYPE}
   ${HFILES}
   ${CUHFILES}
   ${HFILES_PUBLIC}

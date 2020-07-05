@@ -2,6 +2,14 @@
 #  Gunrock: Set sub projects includes, links and executables.
 # ------------------------------------------------------------------------
 
+# begin /* rapidjson include directories */
+if(RAPIDJSON_FOUND)
+  include_directories(${RAPIDJSON_INCLUDEDIR})
+else()
+  message(SEND_ERROR "RapidJson include directory not set.")
+endif()
+# end /* rapidjson include directories */
+
 # begin /* moderngpu include directories */
 if(mgpu_INCLUDE_DIRS)
   include_directories(${mgpu_INCLUDE_DIRS})
@@ -10,8 +18,7 @@ else()
 endif()
 
 set (mgpu_SOURCE_FILES
-  ${mgpu_SOURCE_DIRS}/mgpucontext.cu
-  ${mgpu_SOURCE_DIRS}/mgpuutil.cpp)
+  ${mgpu_SOURCE_DIRS}/context.hxx)
 # end /* moderngpu include directories */
 
 # begin /* CUB include directories */
@@ -25,6 +32,7 @@ endif()
 # begin /* Add CUDA executables */
 CUDA_ADD_EXECUTABLE(${PROJECT_NAME}
   test_${PROJECT_NAME}.cu
+  ${CMAKE_SOURCE_DIR}/gunrock/util/str_to_T.cu
   ${CMAKE_SOURCE_DIR}/gunrock/util/test_utils.cu
   ${CMAKE_SOURCE_DIR}/gunrock/util/error_utils.cu
   ${CMAKE_SOURCE_DIR}/gunrock/util/misc_utils.cu
@@ -39,4 +47,11 @@ if (METIS_LIBRARY)
   target_link_libraries(${PROJECT_NAME} ${METIS_LIBRARY})
 endif()
 # end /* Link Metis and Boost */
+
+# begin /* Simple ctest that tests cmd help */
+string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
+add_test(NAME TEST_${PROJECT_NAME_UP}_CMD COMMAND ${PROJECT_NAME} --help)
+set_tests_properties(TEST_${PROJECT_NAME_UP}_CMD PROPERTIES 
+PASS_REGULAR_EXPRESSION "Required arguments:")
+# end /* Simple ctest that tests cmd help */
 

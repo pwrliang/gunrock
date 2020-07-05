@@ -14,11 +14,12 @@ def init_git() {
 // build gunrock using cmake
 def cmake_build() {
   checkout scm
-  retry(5) {
+  retry(1) {
     timeout(time: 20, unit: 'MINUTES') {
       sh 'mkdir -p build'
+      // MGPU not fully supported in v1.0.0
       sh '''cd build
-            cmake ..
+            cmake -DGUNROCK_CODE_COVERAGE=ON -DGUNROCK_GOOGLE_TESTS=ON .. //-DGUNROCK_MGPU_TESTS=ON ..
             make -j16'''
     }
   }
@@ -41,16 +42,13 @@ def notifySlack(String buildStatus = 'STARTED') {
         color = '#FF9FA1'
     }
 
-    def msg = "${buildStatus}: `${env.JOB_NAME}` #${env.BUILD_NUMBER}:\n${env.BUILD_URL}"
+    def msg = "${buildStatus}: `${env.JOB_NAME}` #${env.BUILD_NUMBER}:\n${env.RUN_DISPLAY_URL}"
 
     slackSend(color: color, message: msg)
 }
 
 pipeline {
   agent any
-  triggers {
-    pollSCM '@hourly'
-  }
   stages {
     stage('Init') {
       steps {
@@ -64,12 +62,24 @@ pipeline {
         cmake_build()
       }
     }
+    
     stage('Regression Tests') {
       steps {
         sh '''cd build
+              cd examples
               ctest -VV'''
       }
     }
+    
+    stage('Code Coverage') {
+      steps {
+        sh '''#!/bin/bash
+              cd build
+              CODECOV_TOKEN="d0690e81-c2ed-42d0-8a63-da351c3ae619"
+              bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN} || echo "Error: Codecov did not collect coverage reports"'''
+      }
+    }
+    
     stage('Deploy') {
       steps {
         echo 'Branch: Master.'
@@ -77,16 +87,16 @@ pipeline {
       }
     }
   }
-  post { 
-      always {
-        cleanWs()
-      }
-      success {
-        // Implement: junit 'build/reports/**/*.xml'  
-        notifySlack('SUCCESS')
-      }
-      failure {
-        notifySlack('FAILURE')
-      }
-   }
+  
+  post {
+    always {
+      cleanWs() 
+    }
+    success {
+      notifySlack('SUCCESS')
+    }
+    failure {
+      notifySlack('FAILURE')
+    }
+  }
 }
