@@ -451,7 +451,7 @@ struct PRIteration : public IterationBase <
                 "cudaStreamSynchronize failed", __FILE__, __LINE__))
                 return;
             data_slice->num_updated_vertices = frontier_attribute->queue_length;
-            printf("num_updated_vertices = %d\n", data_slice -> num_updated_vertices);
+            //printf("num_updated_vertices = %d\n", data_slice -> num_updated_vertices);
 
             //enactor_stats      -> Accumulate(
             //    work_progress  -> GetQueueLengthPointer<unsigned int,SizeT>(frontier_attribute->queue_index), stream);
