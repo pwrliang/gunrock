@@ -113,7 +113,11 @@ void Iteration_Loop(ThreadSlice &thread_data, IterationT &iteration) {
 #endif
 
   util::PrintMsg("Iteration entered", enactor.flag & Debug);
+  uint32_t iter_counter = 1;
   while (!iteration.Stop_Condition(gpu_num)) {
+    util::CpuTimer iter_timer;
+    iter_timer.Start();
+
     total_length = 0;
     received_length = frontier0.queue_length;
     mgpu_slice.wait_counter = 0;
@@ -754,7 +758,9 @@ void Iteration_Loop(ThreadSlice &thread_data, IterationT &iteration) {
 #endif
       }
     }
-
+    iter_timer.Stop();
+    cout << "Iter: " << iter_counter++
+         << " Time: " << iter_timer.ElapsedMillis();
 #ifdef ENABLE_PERFORMANCE_PROFILING
     iter_stop_time = cpu_timer.MillisSinceStart();
     iter_total_time.push_back(iter_stop_time - iter_start_time);
