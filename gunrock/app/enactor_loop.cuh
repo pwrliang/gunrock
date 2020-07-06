@@ -112,7 +112,7 @@ void Iteration_Loop(ThreadSlice &thread_data, IterationT &iteration) {
     previous_edges_queued[peer_] = 0;
   }
 #endif
-
+  int n_iter = 1;
   util::PrintMsg("Iteration entered", enactor.flag & Debug);
   while (!iteration.Stop_Condition(gpu_num)) {
     total_length = 0;
@@ -121,6 +121,8 @@ void Iteration_Loop(ThreadSlice &thread_data, IterationT &iteration) {
     // tretval                  = cudaSuccess;
     // frontier0.queue_offset   = 0;
     frontier0.queue_reset = true;
+    util::CpuTimer iter_timer;
+    iter_timer.Start();
     if (num_gpus > 1) {
       if (enactor_stats0.iteration != 0)
         for (int i = 1; i < num_gpus; i++) {
@@ -762,6 +764,9 @@ void Iteration_Loop(ThreadSlice &thread_data, IterationT &iteration) {
     iter_start_time = iter_stop_time;
 #endif
     iteration.Change();
+    iter_timer.Stop();
+    std::cout << "Iter: " << n_iter++
+              << " Time: " << iter_timer.ElapsedMillis();
   }
 }
 
