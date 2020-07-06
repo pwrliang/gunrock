@@ -765,8 +765,8 @@ void Iteration_Loop(ThreadSlice &thread_data, IterationT &iteration) {
 #endif
     iteration.Change();
     iter_timer.Stop();
-    std::cout << "Iter: " << n_iter++
-              << " Time: " << iter_timer.ElapsedMillis();
+    std::cout << "Iter: " << n_iter++ << " Time: " << iter_timer.ElapsedMillis()
+              << std::endl;
   }
 }
 
